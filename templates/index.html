@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GreenCode AI | Sustainable Code Carbon Footprint & Energy Optimizer</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-top">
+                <div class="brand">
+                    <i class="fa-solid fa-leaf brand-icon"></i>
+                    <div class="brand-text">
+                        <h2>GreenCode AI</h2>
+                        <span>Green Computing Engine</span>
+                    </div>
+                </div>
+
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-tab="analyzer-tab">
+                        <i class="fa-solid fa-code"></i> Code Analyzer
+                    </button>
+                    <button class="nav-btn" data-tab="analytics-tab">
+                        <i class="fa-solid fa-chart-line"></i> Energy & Carbon
+                    </button>
+                    <button class="nav-btn" data-tab="history-tab">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Audit History
+                    </button>
+                    <button class="nav-btn" data-tab="guidelines-tab">
+                        <i class="fa-solid fa-book-bookmark"></i> Eco Guidelines
+                    </button>
+                </nav>
+            </div>
+
+            <div class="sustainability-badge">
+                <div class="badge-header">
+                    <i class="fa-solid fa-seedling"></i> Total Impact Saved
+                </div>
+                <div class="badge-value" id="total-co2-saved">0.000 gCO2e</div>
+                <div class="badge-sub" id="total-audits-count">0 Audits Completed</div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-title">Sustainable Code Energy Profiler & Optimizer</h1>
+                    <p>Profile software power consumption (Watts), carbon footprint (gCO2e), and automate green refactoring</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-outline" onclick="loadSamplePreset('data_processing')">
+                        <i class="fa-solid fa-vial"></i> Load Preset Demo
+                    </button>
+                </div>
+            </header>
+
+            <!-- TAB 1: CODE ANALYZER -->
+            <section id="analyzer-tab" class="tab-page active">
+                <div class="analyzer-grid">
+                    <!-- Left: Code Input Card -->
+                    <div class="card editor-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-terminal"></i> Source Code Input
+                            </div>
+                            <div class="input-controls">
+                                <input type="text" id="project-name-input" placeholder="Project Name (e.g. Data Matrix Audit)" class="text-input">
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <textarea id="code-input" class="code-editor" spellcheck="false" placeholder="# Paste your Python code snippet here...&#10;def process_items(user_ids, active_ids):&#10;    result = ''&#10;    for uid in user_ids:&#10;        if uid in active_ids:  # Hidden O(N^2) search&#10;            result += str(uid)  # Unbuffered string build&#10;    return result"></textarea>
+                        </div>
+                        <div class="card-footer">
+                            <div class="sample-pills">
+                                <span class="pill-label">Presets:</span>
+                                <button class="pill-btn" onclick="loadSamplePreset('data_processing')">Data Processing</button>
+                                <button class="pill-btn" onclick="loadSamplePreset('nested_loops')">Matrix Loops</button>
+                                <button class="pill-btn" onclick="loadSamplePreset('recursion')">Uncached Recursion</button>
+                            </div>
+                            <button class="btn btn-primary" id="run-audit-btn">
+                                <i class="fa-solid fa-bolt"></i> Run Eco-Audit & Refactor
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Eco Audit Scorecard Card -->
+                    <div class="card results-card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <i class="fa-solid fa-gauge-high"></i> Energy & Carbon Audit Scorecard
+                            </div>
+                        </div>
+                        <div class="card-body" id="scorecard-body">
+                            <div class="placeholder-state">
+                                <i class="fa-solid fa-leaf placeholder-icon"></i>
+                                <h3>Ready for Sustainability Audit</h3>
+                                <p>Click "Run Eco-Audit & Refactor" to profile execution energy consumption, calculate carbon footprint ($gCO_2e$), and automatically generate eco-friendly code.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Code Comparison View (Hidden until analyzed) -->
+                <div class="card comparison-card hidden" id="comparison-section">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fa-solid fa-code-compare"></i> Side-by-Side Code Refactoring Comparison
+                        </div>
+                        <div class="badge badge-success" id="savings-badge">0% Carbon Saved</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="code-diff-grid">
+                            <div class="diff-box">
+                                <div class="diff-header original">
+                                    <span><i class="fa-solid fa-triangle-exclamation"></i> Original Inefficient Code</span>
+                                    <span class="badge badge-warning" id="orig-score-pill">Eco Score: 50</span>
+                                </div>
+                                <pre><code id="orig-code-display"></code></pre>
+                            </div>
+                            <div class="diff-box">
+                                <div class="diff-header optimized">
+                                    <span><i class="fa-solid fa-shield-halved"></i> Green AI Eco-Optimized Code</span>
+                                    <span class="badge badge-success" id="opt-score-pill">Eco Score: 100</span>
+                                </div>
+                                <pre><code id="opt-code-display"></code></pre>
+                            </div>
+                        </div>
+
+                        <!-- Transformations List -->
+                        <div class="transformations-container">
+                            <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Applied Green Refactoring Transformations:</h4>
+                            <ul id="transformations-list" class="transform-list"></ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: ANALYTICS -->
+            <section id="analytics-tab" class="tab-page">
+                <div class="charts-grid">
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-plug"></i> Energy Consumed (Joules)</div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="energyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-smog"></i> Carbon Footprint (gCO2e)</div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="carbonChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-stopwatch"></i> Execution Speedup (ms)</div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="latencyChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <div class="card-title"><i class="fa-solid fa-memory"></i> Memory Allocated (MB)</div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="memoryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: AUDIT HISTORY -->
+            <section id="history-tab" class="tab-page">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-list-check"></i> Recorded Code Sustainability Audits</div>
+                        <button class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; color: #ef4444; border-color: rgba(239,68,68,0.4);" onclick="clearAllHistory()">
+                            <i class="fa-solid fa-trash-can"></i> Clear All History
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Project Name</th>
+                                        <th>Original Score</th>
+                                        <th>Optimized Score</th>
+                                        <th>Energy Saved</th>
+                                        <th>Carbon Reduced</th>
+                                        <th>Speedup</th>
+                                        <th>Timestamp</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-table-body">
+                                    <tr><td colspan="9" class="text-center">No audit history recorded yet.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: BEST PRACTICES GUIDELINES -->
+            <section id="guidelines-tab" class="tab-page">
+                <div class="guidelines-grid">
+                    <div class="card guideline-card">
+                        <div class="guideline-icon"><i class="fa-solid fa-cubes"></i></div>
+                        <h3>1. Hash Lookup Over Linear Search</h3>
+                        <p>Scanning array elements in a loop costs $O(N)$ per iteration, creating hidden $O(N^2)$ power drain. Convert containers into a `set` or `dict` for constant $O(1)$ lookup speed.</p>
+                    </div>
+                    <div class="card guideline-card">
+                        <div class="guideline-icon"><i class="fa-solid fa-bolt"></i></div>
+                        <h3>2. Function Call Memoization</h3>
+                        <p>Exponential recursion executes millions of redundant calls. Use `@functools.lru_cache(maxsize=None)` to store evaluated subproblems, reducing complexity from $O(2^N)$ to $O(N)$.</p>
+                    </div>
+                    <div class="card guideline-card">
+                        <div class="guideline-icon"><i class="fa-solid fa-memory"></i></div>
+                        <h3>3. Efficient Memory String Buffering</h3>
+                        <p>Repeated string concatenation (`+=`) forces memory reallocation on every iteration. Buffer segments into a list and apply `''.join(buffer)` after loop completion.</p>
+                    </div>
+                    <div class="card guideline-card">
+                        <div class="guideline-icon"><i class="fa-solid fa-server"></i></div>
+                        <h3>4. Generator Streaming for Big Data</h3>
+                        <p>Avoid building massive intermediate lists in RAM. Use generator expressions `(item for item in data)` to stream process data, cutting memory power usage by up to 90%.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
